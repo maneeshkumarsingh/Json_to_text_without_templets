@@ -1,0 +1,600 @@
+{
+	"product": "SMSCSigtranStackConfiguration",
+	"version": 4.3,
+	"releaseDate": "2022-06-25T00:00:00.000Z",
+	"server": [
+		{
+			"id": "ip-172-27-128-58.eu-central-1.compute.internal",
+			"realm": "cg-dc-1",
+			"tag": [
+				"smsc",
+				"sig",
+				"site1"
+			],
+			"desc": "SMSC-SIG1",
+			"sysSystem": {
+				"file": "./system.txt",
+				"modules": {
+					"comment": "**list of queue per module",
+					"FS": " ",
+					"EOR": "",
+					"TAG": "n",
+					"LOCAL": [
+						{
+							"id": "0x00",
+							"comment": "* TIMNT"
+						},
+						{
+							"id": "0xcf",
+							"comment": "* S7MGT"
+						},
+						{
+							"id": "0xef",
+							"comment": "* S7LOG"
+						},
+						{
+							"id": "0x3d",
+							"comment": "* DSICTL"
+						},
+						{
+							"id": "0xd1",
+							"comment": "* SCTP"
+						},
+						{
+							"id": "0xd2",
+							"comment": "* M3UA"
+						},
+						{
+							"id": "0x34",
+							"comment": "* SCCP"
+						},
+						{
+							"id": "0x12",
+							"comment": "* TCAP1"
+						},
+						{
+							"id": "0x14",
+							"comment": "* TCAP2"
+						},
+						{
+							"id": "0x13",
+							"comment": "* MAP1"
+						},
+						{
+							"id": "0x15",
+							"comment": "* MAP2"
+						},
+						{
+							"id": "0x70",
+							"comment": "* SCCPR"
+						},
+						{
+							"id": "0x71",
+							"comment": "* SMSCMAPP"
+						}
+					],
+					"defaultModule": {
+						"comment": "**list of queue per module",
+						"FS": " ",
+						"EOR": "",
+						"TAG": "n",
+						"DEFAULT_MODULE": {
+							"id": "0xef",
+							"comment": "* Default Module"
+						}
+					}
+				},
+				"redirects": {
+					"comment": "**redirections for queue",
+					"FS": " ",
+					"EOR": "",
+					"TAG": "n",
+					"REDIRECT": [
+						{
+							"from": "0x22",
+							"to": "0xd2",
+							"comment": "* MTP3 -> M3UA"
+						},
+						{
+							"from": "0xd0",
+							"to": "0xd1",
+							"comment": "* sctp"
+						},
+						{
+							"from": "0xc2",
+							"to": "0xd2",
+							"comment": ""
+						},
+						{
+							"from": "0xdf",
+							"to": "0xef",
+							"comment": "* LIU/MTP2 status messages -> s7_log"
+						},
+						{
+							"from": "0xee",
+							"to": "0xef",
+							"comment": "* PM to STSIPC for HB"
+						}
+					]
+				},
+				"queue": {
+					"normalMsgQSize": {
+						"comment": "**process list",
+						"FS": " ",
+						"EOR": "",
+						"TAG": "n",
+						"NUM_MSGS": {
+							"value": "60000",
+							"comment": ""
+						}
+					},
+					"longMsgQSize": {
+						"comment": "**process list",
+						"FS": " ",
+						"EOR": "",
+						"TAG": "n",
+						"NUM_LMSGS": {
+							"value": "10000",
+							"comment": "* To support long messages"
+						}
+					}
+				},
+				"congestion": {},
+				"process": {
+					"comment": "**process list",
+					"FS": " ",
+					"EOR": "",
+					"TAG": "n",
+					"FORK_PROCESS": [
+						{
+							"app": "./tim_lnx",
+							"args": "",
+							"comment": ""
+						},
+						{
+							"app": "./s7_mgt",
+							"args": "-d -kconfig.txt",
+							"comment": ""
+						},
+						
+						{
+							"app": "./tick_lnx",
+							"args": "",
+							"comment": ""
+						},
+						{
+							"app": "./sctpn",
+							"args": "",
+							"comment": ""
+						},
+						{
+							"app": "./6dM3UA.exe",
+							"args": "",
+							"comment": ""
+						},
+						{
+							"app": "HSTBIN/sccp",
+							"args": "-m0x34 -t",
+							"comment": ""
+						},
+						{
+							"app": "HSTBIN/tcap",
+							"args": "-m0x12 -t",
+							"comment": ""
+						},
+						{
+							"app": "HSTBIN/tcap",
+							"args": "-m0x14 -t",
+							"comment": ""
+						},
+						{
+							"app": "HSTBIN/map",
+							"args": "-m0x13 -t",
+							"comment": ""
+						},
+						{
+							"app": "HSTBIN/map",
+							"args": "-m0x15 -t",
+							"comment": ""
+						},
+						{
+							"app": "./s7_log",
+							"args": "-fs7log.txt -ps7log.pcap -td -n60 -s60000",
+							"comment": ""
+						}
+					]
+				},
+				"verifyConfig": {
+					"comment": "**verify configuration",
+					"FS": " ",
+					"EOR": "",
+					"TAG": "n",
+					"VERIFY": {
+						"id": ""
+					}
+				}
+			},
+			"sysConfig": {
+				"file": "./config.txt",
+				"global": {
+					"comment": "**Configure your System IP Addres and Set DAUD=Y",
+					"FS": ",",
+					"EOR": ";",
+					"CNSYS:": {
+						"IPADDR=": "172.27.128.58",
+						"DAUD=": "Y",
+						"AUTOACT=": "Y"
+					}
+				},
+				"sctpAssoc": {
+					"comment": "*** Configure Your STP IP's and PORT Address and SNEND as S",
+					"FS": ",",
+					"EOR": ";",
+					"SNSLI:": [
+						{
+							"comment": "ACCRA_SPX1_SMSC",
+							"SNLINK=": "1",
+							"IPADDR=": "172.27.128.9",
+							"HPORT=": "6916",
+							"PPORT=": "6914",
+							"SNEND=": "C",
+							"SNTYPE=": "m3ua",
+							"SG=": "1"
+						},
+						{
+							"comment": "ACCRA_SPX2_SMSC",
+							"SNLINK=": "2",
+							"IPADDR=": "172.27.128.9",
+							"HPORT=": "6917",
+							"PPORT=": "6915",
+							"SNEND=": "C",
+							"SNTYPE=": "m3ua",
+							"SG=": "2"
+						}
+					]
+				},
+				"localAS": {
+					"comment": "*** Configure System PC and Routing Context",
+					"FS": ",",
+					"EOR": ";",
+					"SNAPI:": [
+						{
+							"comment": "",
+							"LAS=": "1",
+							"OPC=": "3006",
+							"SS7MD=": "ITU14",
+							"TRMD=": "LS"
+						}
+					]
+				},
+				"m3uaRouting": {
+					"comment": "** Configure your Destination Pointcode and Routing Context at STP end",
+					"routes": {
+						"comment": "",
+						"FS": ",",
+						"EOR": ";",
+						"SNRTI:": [
+							{
+								"SNRT=": "1",
+								"DPC=": "4077",
+								"LAS=": "1",
+								"SNTYPE=": "",
+								"OPTIONS=": ""
+							},
+							{
+								"SNRT=": "2",
+								"DPC=": "4078",
+								"LAS=": "1",
+								"SNTYPE=": "",
+								"OPTIONS=": ""
+							}
+						]
+					},
+					"routesMap": {
+						"comment": "* Map RT to SG",
+						"FS": ",",
+						"EOR": ";",
+						"SNRLI:": [
+							{
+								"SNRL=": "1",
+								"SNRT=": "1",
+								"SG=": "1",
+								"OPTIONS=": ""
+							},
+							{
+								"SNRL=": "2",
+								"SNRT=": "2",
+								"SG=": "2",
+								"OPTIONS=": ""
+							}
+						]
+					},
+					"mapAS": {
+						"comment": "* Map LAS and RAS",
+						"FS": ",",
+						"EOR": ";",
+						"SNLBI:": [
+							{
+								"SNLB=": "1",
+								"LAS=": "1",
+								"SG=": "1",
+								"RC=": "0"
+							},
+							{
+								"SNLB=": "2",
+								"LAS=": "1",
+								"SG=": "2",
+								"RC=": "0"
+							}
+						]
+					}
+				},
+				"userPart": {
+					"comment": "* upper user app id",
+					"FS": " ",
+					"EOR": "",
+					"TAG": "n",
+					"MTP_USER_PART": [
+						{
+							"nc": "NC0",
+							"sio": "0x03",
+							"mid": "0x33"
+						}
+					]
+				},
+				"sccp": {
+					"baseConfig": {
+						"comment": "**SCCP configuration",
+						"FS": " ",
+						"EOR": "",
+						"TAG": "n",
+						"SCCP_CONFIG": {
+							"local_spc": "0x00000bbe",
+							"ssf": "8",
+							"options": "0x008d8106",
+							"optional": {
+								"options2": "",
+								"partner_id": "",
+								"instance": "",
+								"smb_flags": ""
+							}
+						}
+					},
+					"subSystemConfig": {
+						"comment": "**SCCP subsystem configuration",
+						"FS": " ",
+						"EOR": "",
+						"TAG": "n",
+						"SCCP_SSR": [
+							{
+								"ssr_id": "1",
+								"type": "LSS",
+								"local_ssn": "0x08",
+								"module_id": "0x14",
+								"flags": "0x01",
+								"protocol": "TCAP",
+								"optional": {
+									"mgt_flags": ""
+								}
+							},
+							{
+								"ssr_id": "2",
+								"type": "LSS",
+								"local_ssn": "0x05",
+								"module_id": "0x12",
+								"flags": "0x01",
+								"protocol": "TCAP",
+								"optional": {
+									"mgt_flags": ""
+								}
+							},
+							{
+								"ssr_id": "3",
+								"type": "RSP",
+								"rspc": "0x00000fed",
+								"flags": "0x00",
+								"pc_mask": "",
+								"optional": {
+									"ssf": "",
+									"mtp_module_id": "",
+									"label_fmt": "",
+									"ads_fmt": "",
+									"local_spc": ""
+								}
+							}
+						]
+					},
+					"sccpTrace": {
+						"comment": "**SCCP trace",
+						"FS": " ",
+						"EOR": "",
+						"TAG": "n",
+						"SCCP_TRACE": {
+							"op_evt_mask": "0x00000003",
+							"ip_evt_mask": "0x00000003",
+							"non_prim_mask": "0x00000003"
+						}
+					},
+					"sccpGlobalTitleTranslation": {
+						"sccpGTPattern": {
+							"comment": "**Define SCCP GT Pattern GTI for matching",
+							"FS": " ",
+							"EOR": "",
+							"TAG": "n",
+							"SCCP_GTT_PATTERN": [
+								{
+									"GTPID": "1",
+									"GTI": "4",
+									"SSN": "",
+									"TT": "0",
+									"NP": "1",
+									"NAI": "4",
+									"ES": "BCD",
+									"LABEL": "E164-MSISDN"
+								}
+							]
+						},
+						"sccpGTTAddress": {
+							"comment": "**Define SCCP routes",
+							"FS": " ",
+							"EOR": "",
+							"TAG": "n",
+							"SCCP_GTT_ADDRESS": [
+								{
+									"GTAID": "1",
+									"SPC": "0x0bbe",
+									"SSN": "",
+									"RI": "",
+									"NAT": "",
+									"GTI": "",
+									"TT": "",
+									"NP": "",
+									"NAI": "",
+									"ES": "BCD",
+									"LABEL": "Local GT Routing"
+								}
+							]
+						},
+						"sccpGTTMap": {
+							"comment": "**Define SCCP GTT & GTA MAP",
+							"FS": " ",
+							"EOR": "",
+							"TAG": "n",
+							"SCCP_GTT Command": [
+								{
+									"GTTID": "1",
+									"GTPID": "1",
+									"DIGITS": "98",
+									"RANGE": "",
+									"GTT_MASK": "",
+									"PRI_GTAID": "1",
+									"SEC_GTAID": "NONE",
+									"REPLACE": "",
+									"GTTSRC": "REMOTE",
+									"BAK_DUAL": "N",
+									"LABEL": "SMSC"
+								}
+							]
+						}
+					}
+				},
+				"tcap": {
+					"baseConfig": {
+						"comment": "**SCCP configuration",
+						"FS": " ",
+						"EOR": "",
+						"TAG": "n",
+						"TCAP_CONFIG": [
+							{
+								"id": "0x14",
+								"sccp": "34",
+								"map": "15",
+								"base_ogdlg_id": "0x0000",
+								"nog_dialogues": "0x7fff",
+								"base_icdlg_id": "0x8000",
+								"nic_dialogues": "0x2000",
+								"options": "0x0004",
+								"optional": {
+									"tid_inst": "0x00",
+									"tid_nref": "0x10",
+									"tid_nseq": "0x08",
+									"addr_format": "",
+									"partner_id": "",
+									"tcap_inst": "0x00",
+									"max_instance": ""
+								}
+							},
+							{
+								"id": "0x12",
+								"sccp": "34",
+								"map": "13",
+								"base_ogdlg_id": "0x0000",
+								"nog_dialogues": "0x7fff",
+								"base_icdlg_id": "0x8000",
+								"nic_dialogues": "0x2000",
+								"options": "0x0004",
+								"optional": {
+									"tid_inst": "0x00",
+									"tid_nref": "0x10",
+									"tid_nseq": "0x08",
+									"addr_format": "",
+									"partner_id": "",
+									"tcap_inst": "0x00",
+									"max_instance": ""
+								}
+							}
+						]
+					},
+					"tcapTrace": {
+						"comment": "**SCCP trace",
+						"FS": " ",
+						"EOR": "",
+						"TAG": "n",
+						"TCAP_TRACE": [
+							{
+								"id": "0x14",
+								"op_evt_mask": "0x00000003",
+								"ip_evt_mask": "0x00000003",
+								"non_prim_mask": "0x00000003"
+							},
+							{
+								"id": "0x12",
+								"op_evt_mask": "0x00000003",
+								"ip_evt_mask": "0x00000003",
+								"non_prim_mask": "0x00000003"
+							}
+						]
+					}
+				},
+				"map": {
+					"baseConfig": {
+						"comment": "**SCCP configuration",
+						"FS": " ",
+						"EOR": "",
+						"TAG": "n",
+						"MAP_CONFIG": [
+							{
+								"id": "0x15",
+								"tcap": "0x14",
+								"user": "0x71",
+								"base_ogdlg_id": "0x0000",
+								"nog_dialogues": "0x7fff",
+								"base_icdlg_id": "0x8000",
+								"nic_dialogues": "0x2000"
+							},
+							{
+								"id": "0x13",
+								"tcap": "0x12",
+								"user": "0x70",
+								"base_ogdlg_id": "0x0000",
+								"nog_dialogues": "0x7fff",
+								"base_icdlg_id": "0x8000",
+								"nic_dialogues": "0x2000"
+							}
+						]
+					},
+					"mapTrace": {
+						"comment": "**SCCP trace",
+						"FS": " ",
+						"EOR": "",
+						"TAG": "n",
+						"MAP_TRACE": [
+							{
+								"id": "0x15",
+								"op_evt_mask": "0x0000000f",
+								"ip_evt_mask": "0x0000000f",
+								"non_prim_mask": "0x00000000"
+							},
+							{
+								"id": "0x13",
+								"op_evt_mask": "0x0000000f",
+								"ip_evt_mask": "0x0000000f",
+								"non_prim_mask": "0x00000000"
+							}
+						]
+					}
+				}
+			}
+		}
+	]
+}

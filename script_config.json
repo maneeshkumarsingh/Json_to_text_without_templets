@@ -1,0 +1,11 @@
+{
+ 
+  "SYSTEM_TEMPLET" :"./Templet/system_template.txt",
+
+  "CONFIG_TEMPLET" :"./Templet/config_template.txt",
+
+  "RESULT" : "./Result/"
+
+   
+ 
+}
